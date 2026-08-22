@@ -51,6 +51,28 @@ describe('App', () => {
     expect(screen.getByRole('searchbox', { name: /buscar por ciudad/i })).toBeEnabled();
   });
 
+  it('normaliza coordenadas de alta precisión antes de consultar la API', async () => {
+    const user = userEvent.setup();
+    const getCurrentPosition = vi.fn((success) => success({
+      coords: {
+        latitude: -12.046373112345,
+        longitude: -77.042754123456,
+      },
+    }));
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ data: weatherFixture }));
+    vi.stubGlobal('fetch', fetchMock);
+    vi.stubGlobal('navigator', { geolocation: { getCurrentPosition } });
+
+    render(<App />);
+    await user.click(screen.getByRole('button', { name: /usar mi ubicación/i }));
+
+    expect(await screen.findByRole('heading', { name: /Lima, PE/i })).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/weather?lat=-12.04637311&lon=-77.04275412',
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
+  });
+
   it('rechaza una búsqueda vacía sin llamar a la API', async () => {
     const user = userEvent.setup();
     const fetchMock = vi.fn();

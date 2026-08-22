@@ -1,4 +1,5 @@
 const WEATHER_ENDPOINT = '/api/weather';
+const COORDINATE_DECIMALS = 8;
 
 export class WeatherApiError extends Error {
   constructor(message, code = 'WEATHER_REQUEST_FAILED') {
@@ -11,6 +12,17 @@ export class WeatherApiError extends Error {
 const isFiniteNumber = (value) => Number.isFinite(value);
 const isNonEmptyString = (value) => typeof value === 'string' && value.trim().length > 0;
 const isString = (value) => typeof value === 'string';
+
+function serializeCoordinate(value, minimum, maximum) {
+  if (!Number.isFinite(value) || value < minimum || value > maximum) {
+    throw new WeatherApiError(
+      'Las coordenadas de ubicación recibidas no son válidas.',
+      'INVALID_COORDINATES',
+    );
+  }
+
+  return value.toFixed(COORDINATE_DECIMALS);
+}
 
 export function isWeatherData(value) {
   return Boolean(
@@ -43,8 +55,8 @@ export async function fetchWeather(query, { signal } = {}) {
   if (query.city) {
     searchParams.set('city', query.city);
   } else {
-    searchParams.set('lat', String(query.lat));
-    searchParams.set('lon', String(query.lon));
+    searchParams.set('lat', serializeCoordinate(query.lat, -90, 90));
+    searchParams.set('lon', serializeCoordinate(query.lon, -180, 180));
   }
 
   const response = await fetch(`${WEATHER_ENDPOINT}?${searchParams}`, {
