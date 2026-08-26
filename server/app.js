@@ -1,5 +1,4 @@
 import { extname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import express from "express";
 import helmet from "helmet";
 
@@ -18,8 +17,10 @@ import {
   DEFAULT_UPSTREAM_TIMEOUT_MS,
 } from "./weather-service.js";
 
-const SERVER_DIRECTORY = fileURLToPath(new URL(".", import.meta.url));
-export const DEFAULT_DIST_DIRECTORY = resolve(SERVER_DIRECTORY, "..", "dist");
+// process.cwd() instead of import.meta.url: serverless bundlers (Netlify's
+// esbuild step) transpile this file to CJS, where import.meta.url is
+// undefined and crashes "new URL(...)" at load time.
+export const DEFAULT_DIST_DIRECTORY = resolve(process.cwd(), "dist");
 
 function positiveInteger(value, fallback) {
   const number = Number(value);
