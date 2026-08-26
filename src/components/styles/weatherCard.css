@@ -18,6 +18,7 @@
 
 .weather-card__heading > div {
   min-width: 0;
+  flex: 1 1 auto;
 }
 
 .weather-card__heading h2 {
@@ -30,14 +31,13 @@
 }
 
 .weather-card__heading h2 span {
-  display: inline-block;
-  margin-left: 0.4rem;
+  display: inline;
   color: var(--text-secondary);
-  font-size: 0.36em;
-  font-weight: 760;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  vertical-align: middle;
+  font-size: 0.64em;
+  font-weight: 680;
+  letter-spacing: -0.015em;
+  text-transform: none;
+  vertical-align: 0.08em;
 }
 
 .weather-card__date {
@@ -268,13 +268,6 @@
   font-weight: 650;
 }
 
-.weather-card__updated {
-  margin: -0.45rem 0 0;
-  color: var(--text-tertiary);
-  font-size: 0.73rem;
-  text-align: right;
-}
-
 @media (hover: hover) and (pointer: fine) {
   .weather-metric:hover {
     border-color: var(--border-hover);
@@ -317,10 +310,6 @@
 
   .weather-card__heading h2 {
     font-size: clamp(1.75rem, 9vw, 2.6rem);
-  }
-
-  .weather-card__label {
-    margin-bottom: 0.65rem;
   }
 
   .weather-card__date {
@@ -367,9 +356,6 @@
     font-size: clamp(1.1rem, 5.5vw, 1.4rem);
   }
 
-  .weather-card__updated {
-    text-align: left;
-  }
 }
 
 @media (max-width: 23rem) {

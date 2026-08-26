@@ -18,9 +18,16 @@ describe('App', () => {
     vi.stubGlobal('fetch', fetchMock);
     vi.stubGlobal('navigator', { geolocation: { getCurrentPosition } });
 
-    render(<App />);
+    const { container } = render(<App />);
+    const searchbox = screen.getByRole('searchbox', { name: /buscar por ciudad/i });
+    const searchButton = screen.getByRole('button', { name: /^buscar$/i });
 
     expect(screen.getByRole('heading', { name: /tu clima, sin complicaciones/i })).toBeInTheDocument();
+    expect(searchbox).toHaveAttribute('placeholder', 'Buscar ciudad...');
+    expect(searchbox.parentElement).toHaveClass('search-form__field');
+    expect(searchbox.parentElement.querySelector('svg')).toBeInTheDocument();
+    expect(searchButton.querySelector('svg')).not.toBeInTheDocument();
+    expect(container.querySelector('.app-header__update')).not.toBeInTheDocument();
     expect(getCurrentPosition).not.toHaveBeenCalled();
     expect(fetchMock).not.toHaveBeenCalled();
   });
@@ -34,7 +41,8 @@ describe('App', () => {
     await user.type(screen.getByRole('searchbox', { name: /buscar por ciudad/i }), 'Lima');
     await user.click(screen.getByRole('button', { name: /^buscar$/i }));
 
-    expect(await screen.findByRole('heading', { name: /Lima, PE/i })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: /Lima, Perú/i })).toBeInTheDocument();
+    expect(screen.getByText(/actualizado:/i)).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock.mock.calls[0][0]).toBe('/api/weather?city=Lima');
   });
@@ -66,7 +74,7 @@ describe('App', () => {
     render(<App />);
     await user.click(screen.getByRole('button', { name: /usar mi ubicación/i }));
 
-    expect(await screen.findByRole('heading', { name: /Lima, PE/i })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: /Lima, Perú/i })).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/weather?lat=-12.04637311&lon=-77.04275412',
       expect.objectContaining({ signal: expect.any(AbortSignal) }),

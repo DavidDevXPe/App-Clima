@@ -46,7 +46,7 @@ function App() {
       <WeatherBackground theme={weatherTheme} />
 
       <main className="app__shell" aria-busy={isBusy}>
-        <AppHeader />
+        <AppHeader observedAt={weather?.observedAt} />
 
         {!hasWeather && (
           <section className="hero" aria-labelledby="welcome-title">
@@ -78,7 +78,7 @@ function App() {
               type="button"
             >
               <LocationIcon />
-              <span className="button__label">
+              <span className="button__label button__label--location">
                 {hasWeather ? 'Mi ubicación' : 'Usar mi ubicación'}
               </span>
             </button>

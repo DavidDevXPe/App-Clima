@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
 import PropTypes from 'prop-types';
+import { formatCountryName } from '../utils/formatCountryName';
 import WeatherIcon from './WeatherIcon';
 import WeatherMetric from './WeatherMetric';
 import './styles/weatherCard.css';
@@ -34,13 +35,6 @@ function formatObservationDate(date) {
   }).format(date);
 }
 
-function formatObservedAt(date) {
-  return new Intl.DateTimeFormat('es-PE', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(date);
-}
-
 function WeatherCard({ weather }) {
   const [isMetric, setIsMetric] = useState(true);
   const titleId = useId();
@@ -57,18 +51,18 @@ function WeatherCard({ weather }) {
     : metersPerSecondToMilesPerHour(metrics.windSpeedMs);
   const temperatureUnit = isMetric ? '°C' : '°F';
   const windUnit = isMetric ? 'm/s' : 'mph';
+  const countryName = formatCountryName(location.country);
 
   return (
     <section className="weather-card glass-panel" aria-labelledby={titleId}>
       <header className="weather-card__heading">
         <div>
-          <p className="weather-card__label">Condiciones actuales</p>
           <h2 id={titleId}>
             {location.city}
-            {location.country && (
+            {countryName && (
               <>
                 {', '}
-                <span>{location.country}</span>
+                <span>{countryName}</span>
               </>
             )}
           </h2>
@@ -92,15 +86,19 @@ function WeatherCard({ weather }) {
       </header>
 
       <div className="weather-card__summary">
-        <p className="weather-card__temperature" aria-live="polite">
+        <p
+          aria-label={`${formatNumber(temperature)} grados ${isMetric ? 'Celsius' : 'Fahrenheit'}`}
+          aria-live="polite"
+          className="weather-card__temperature"
+        >
           {formatNumber(temperature)}
-          <span>{temperatureUnit}</span>
+          <span aria-hidden="true">°</span>
         </p>
         <WeatherIcon code={condition.icon} />
         <div className="weather-card__condition-group">
           <p className="weather-card__condition">{condition.description}</p>
           <p className="weather-card__feels-like">
-            Sensación de {formatNumber(feelsLike)} {temperatureUnit}
+            Sensación térmica {formatNumber(feelsLike)}{temperatureUnit}
           </p>
         </div>
       </div>
@@ -132,12 +130,6 @@ function WeatherCard({ weather }) {
         />
       </dl>
 
-      {observation && (
-        <p className="weather-card__updated">
-          Última actualización{' '}
-          <time dateTime={observedAt}>{formatObservedAt(observation)}</time>
-        </p>
-      )}
     </section>
   );
 }

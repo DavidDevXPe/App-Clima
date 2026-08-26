@@ -39,30 +39,40 @@ function SearchForm({ disabled, onSearch }) {
     <form className="search-form" noValidate onSubmit={handleSubmit} role="search">
       <label htmlFor={inputId}>Buscar por ciudad</label>
       <div className="search-form__controls">
-        <input
-          aria-describedby={describedBy}
-          aria-invalid={Boolean(validationError)}
-          autoComplete="address-level2"
+        <div className="search-form__field">
+          <span className="search-form__icon">
+            <SearchIcon />
+          </span>
+          <input
+            aria-describedby={describedBy}
+            aria-invalid={Boolean(validationError)}
+            autoComplete="address-level2"
+            disabled={disabled}
+            enterKeyHint="search"
+            id={inputId}
+            maxLength={MAX_CITY_LENGTH}
+            onChange={(event) => {
+              setCity(event.target.value);
+              if (validationError) setValidationError('');
+            }}
+            placeholder="Buscar ciudad..."
+            spellCheck="false"
+            type="search"
+            value={city}
+          />
+        </div>
+        <button
+          aria-label="Buscar"
+          className="button button--primary"
           disabled={disabled}
-          enterKeyHint="search"
-          id={inputId}
-          maxLength={MAX_CITY_LENGTH}
-          onChange={(event) => {
-            setCity(event.target.value);
-            if (validationError) setValidationError('');
-          }}
-          placeholder="Ej. Lima, Cusco o Madrid"
-          spellCheck="false"
-          type="search"
-          value={city}
-        />
-        <button className="button button--primary" disabled={disabled} type="submit">
-          <SearchIcon />
-          <span className="button__label">Buscar</span>
+          type="submit"
+        >
+          <span aria-hidden="true" className="button__label button__label--full">Buscar</span>
+          <span aria-hidden="true" className="button__label button__label--compact">Ir</span>
         </button>
       </div>
       <p className="search-form__hint" id={hintId}>
-        Puedes incluir el país para obtener un resultado más preciso.
+        Ej. Lima, Cusco o Madrid. Puedes incluir el país para obtener un resultado más preciso.
       </p>
       {validationError && (
         <p className="form-error" id={errorId} role="alert">
