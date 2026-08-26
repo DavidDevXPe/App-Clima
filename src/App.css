@@ -704,7 +704,7 @@ svg {
     font-weight: 600;
     line-height: 1.2;
     letter-spacing: 0.18em;
-    opacity: 0.85;
+    opacity: 0.9;
     text-align: left;
     white-space: nowrap;
   }
@@ -719,6 +719,10 @@ svg {
 
   .app--welcome .hero {
     margin-top: clamp(1.5rem, 3.5vh, 2rem);
+  }
+
+  .app--welcome .search-panel {
+    margin-top: calc(clamp(2rem, 5vh, 3.5rem) - 0.625rem);
   }
 
   .hero h1 {
