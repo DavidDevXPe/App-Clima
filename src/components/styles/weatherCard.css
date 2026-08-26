@@ -64,11 +64,6 @@
     transform var(--transition-fast);
 }
 
-.unit-toggle:hover {
-  border-color: var(--border-hover);
-  transform: translateY(-1px);
-}
-
 .unit-toggle:active {
   transform: scale(0.98);
 }
@@ -189,7 +184,6 @@
   margin: 0;
   font-size: clamp(1.1rem, 2vw, 1.35rem);
   font-weight: 720;
-  text-transform: capitalize;
 }
 
 .weather-card__feels-like {
@@ -268,6 +262,11 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
+  .unit-toggle:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-1px);
+  }
+
   .weather-metric:hover {
     border-color: var(--border-hover);
     background: rgb(7 31 52 / 56%);

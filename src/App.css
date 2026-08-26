@@ -341,10 +341,6 @@ svg {
   color: var(--text-tertiary);
 }
 
-.search-form input:hover {
-  border-color: var(--border-hover);
-}
-
 .search-form input[aria-invalid='true'] {
   border-color: #ff9dac;
 }
@@ -391,10 +387,6 @@ svg {
     color var(--transition-fast);
 }
 
-.button:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-
 .button:active:not(:disabled) {
   transform: scale(0.98);
 }
@@ -409,21 +401,11 @@ svg {
   background: var(--weather-accent);
 }
 
-.button--primary:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--weather-accent) 86%, white);
-}
-
 .button--secondary,
 .button--compact {
   color: var(--text-primary);
   border-color: var(--border-default);
   background: rgb(7 36 61 / 78%);
-}
-
-.button--secondary:hover:not(:disabled),
-.button--compact:hover:not(:disabled) {
-  border-color: var(--border-hover);
-  background: rgb(12 52 83 / 90%);
 }
 
 .button--compact {
@@ -433,6 +415,26 @@ svg {
 
 .button__label--compact {
   display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .search-form input:hover {
+    border-color: var(--border-hover);
+  }
+
+  .button:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  .button--primary:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--weather-accent) 86%, white);
+  }
+
+  .button--secondary:hover:not(:disabled),
+  .button--compact:hover:not(:disabled) {
+    border-color: var(--border-hover);
+    background: rgb(12 52 83 / 90%);
+  }
 }
 
 :where(button, input, a):focus-visible {

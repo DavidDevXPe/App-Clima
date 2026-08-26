@@ -4,9 +4,39 @@ const conditionPatterns = [
   { label: 'Lluvia', pattern: /rain|lluv/ },
   { label: 'Nieve', pattern: /snow|nieve/ },
   { label: 'Niebla', pattern: /mist|fog|haze|niebl|bruma|calima/ },
-  { label: 'Nublado', pattern: /cloud|nube|nublad/ },
+  { label: 'Nublado', pattern: /cloud|nube|nublad|nubos/ },
   { label: 'Despejado', pattern: /clear|claro|despejad/ },
 ];
+
+const genericConditionDescriptions = new Set([
+  'clear',
+  'clear sky',
+  'cielo claro',
+  'despejado',
+  'clouds',
+  'cloudy',
+  'nubes',
+  'nublado',
+  'nuboso',
+  'rain',
+  'lluvia',
+  'drizzle',
+  'llovizna',
+  'thunderstorm',
+  'storm',
+  'tormenta',
+  'snow',
+  'nieve',
+  'mist',
+  'fog',
+  'haze',
+  'niebla',
+  'neblina',
+  'bruma',
+  'calima',
+]);
+
+const englishConditionPattern = /thunder|storm|drizzle|rain|snow|mist|fog|haze|cloud|clear/;
 
 const conditionLabelsByIcon = {
   '01': 'Despejado',
@@ -27,11 +57,28 @@ function normalizeCondition(value) {
     .toLowerCase();
 }
 
-export function formatConditionName(description, icon) {
-  if (typeof description !== 'string' || description.trim().length === 0) return description;
+function capitalizeFirst(value) {
+  return value.charAt(0).toLocaleUpperCase('es-PE') + value.slice(1);
+}
 
-  const normalizedDescription = normalizeCondition(description);
+export function formatConditionName(description, icon) {
+  const iconFallback = conditionLabelsByIcon[icon?.slice(0, 2)];
+
+  if (typeof description !== 'string' || description.trim().length === 0) {
+    return iconFallback || description;
+  }
+
+  const trimmedDescription = description.trim();
+  const normalizedDescription = normalizeCondition(trimmedDescription);
   const matchedCondition = conditionPatterns.find(({ pattern }) => pattern.test(normalizedDescription));
 
-  return matchedCondition?.label || conditionLabelsByIcon[icon?.slice(0, 2)] || description;
+  if (
+    matchedCondition
+    && (genericConditionDescriptions.has(normalizedDescription)
+      || englishConditionPattern.test(normalizedDescription))
+  ) {
+    return matchedCondition.label;
+  }
+
+  return capitalizeFirst(trimmedDescription);
 }

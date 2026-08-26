@@ -63,13 +63,18 @@ describe('WeatherCard', () => {
   });
 
   it.each([
-    ['nubes dispersas', '03d', 'Nublado'],
+    ['nubes', '03d', 'Nublado'],
+    ['nubes dispersas', '03d', 'Nubes dispersas'],
+    ['muy nuboso', '04d', 'Muy nuboso'],
     ['clear sky', '01d', 'Despejado'],
-    ['lluvia ligera', '10d', 'Lluvia'],
-    ['llovizna ligera', '09d', 'Llovizna'],
-    ['tormenta eléctrica', '11d', 'Tormenta'],
+    ['rain', '10d', 'Lluvia'],
+    ['lluvia ligera', '10d', 'Lluvia ligera'],
+    ['llovizna ligera', '09d', 'Llovizna ligera'],
+    ['tormenta eléctrica', '11d', 'Tormenta eléctrica'],
     ['nieve', '13d', 'Nieve'],
     ['niebla', '50d', 'Niebla'],
+    ['polvo', '50d', 'Polvo'],
+    ['', '50d', 'Niebla'],
   ])('presenta %s (%s) como %s', (description, icon, expectedName) => {
     expect(formatConditionName(description, icon)).toBe(expectedName);
   });
