@@ -8,11 +8,15 @@ const statusMessages = {
 function StatusNotice({ error, hasData, onRetry, status }) {
   if (status === 'error' && error) {
     return (
-      <div className="status-notice status-notice--error" role="alert">
+      <div className="status-notice status-notice--error glass-panel" role="alert">
         <div>
           <strong>No pudimos actualizar el clima</strong>
           <p>{error}</p>
-          {hasData && <p className="status-notice__context">Se mantienen visibles los últimos datos recibidos.</p>}
+          {hasData && (
+            <p className="status-notice__context">
+              Se mantienen visibles los últimos datos recibidos.
+            </p>
+          )}
         </div>
         <button className="button button--compact" onClick={onRetry} type="button">
           Reintentar
@@ -23,10 +27,18 @@ function StatusNotice({ error, hasData, onRetry, status }) {
 
   if (status === 'loading' || status === 'locating') {
     return (
-      <div className="status-notice" role="status">
+      <div className={`status-notice status-notice--${status} glass-panel`} role="status">
         <span className="status-notice__spinner" aria-hidden="true" />
         <span>{statusMessages[status]}</span>
       </div>
+    );
+  }
+
+  if (status === 'success') {
+    return (
+      <p className="sr-only" role="status">
+        Condiciones meteorológicas actualizadas.
+      </p>
     );
   }
 

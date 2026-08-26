@@ -58,7 +58,7 @@ function SearchForm({ disabled, onSearch }) {
         />
         <button className="button button--primary" disabled={disabled} type="submit">
           <SearchIcon />
-          Buscar
+          <span className="button__label">Buscar</span>
         </button>
       </div>
       <p className="search-form__hint" id={hintId}>

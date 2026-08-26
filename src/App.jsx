@@ -1,6 +1,9 @@
+import AppHeader from './components/AppHeader';
 import SearchForm from './components/SearchForm';
 import StatusNotice from './components/StatusNotice';
+import WeatherBackground from './components/WeatherBackground';
 import WeatherCard from './components/WeatherCard';
+import { DEFAULT_WEATHER_THEME, getWeatherTheme } from './config/weatherThemes';
 import { useWeather } from './hooks/useWeather';
 import './App.css';
 
@@ -30,70 +33,92 @@ function App() {
     searchByCity,
     useCurrentLocation,
   } = useWeather();
+  const hasWeather = Boolean(weather);
+  const weatherTheme = hasWeather
+    ? getWeatherTheme(weather.condition.icon)
+    : DEFAULT_WEATHER_THEME;
 
   return (
-    <div className="app">
-      <main className="app__shell" aria-busy={isBusy}>
-        <header className="hero">
-          <p className="hero__eyebrow">Clima en tiempo real</p>
-          <h1>Tu clima, sin complicaciones</h1>
-          <p className="hero__description">
-            Consulta las condiciones actuales de cualquier ciudad o usa tu ubicación cuando tú decidas.
-          </p>
-        </header>
+    <div
+      className={`app ${hasWeather ? 'app--weather' : 'app--welcome'}`}
+      style={{ '--weather-accent': weatherTheme.accent }}
+    >
+      <WeatherBackground theme={weatherTheme} />
 
-        <section className="search-panel" aria-labelledby="weather-search-title">
+      <main className="app__shell" aria-busy={isBusy}>
+        <AppHeader />
+
+        {!hasWeather && (
+          <section className="hero" aria-labelledby="welcome-title">
+            <p className="hero__eyebrow">Tu atmósfera. Ahora.</p>
+            <h1 id="welcome-title">
+              Tu clima,{' '}
+              <span>sin complicaciones</span>
+            </h1>
+            <p className="hero__description">
+              Condiciones actuales y datos claros para cualquier ciudad, en el momento que los necesitas.
+            </p>
+          </section>
+        )}
+
+        <section
+          className={`search-panel glass-panel${hasWeather ? ' search-panel--compact' : ''}`}
+          aria-labelledby="weather-search-title"
+        >
           <h2 id="weather-search-title" className="sr-only">
             Buscar el clima
           </h2>
           <SearchForm disabled={isBusy} onSearch={searchByCity} />
 
-          <div className="search-panel__divider" aria-hidden="true">
-            <span>o</span>
+          <div className="search-panel__location">
+            <button
+              className="button button--secondary"
+              disabled={isBusy}
+              onClick={useCurrentLocation}
+              type="button"
+            >
+              <LocationIcon />
+              <span className="button__label">
+                {hasWeather ? 'Mi ubicación' : 'Usar mi ubicación'}
+              </span>
+            </button>
+            {!hasWeather && (
+              <p className="search-panel__privacy">
+                Tu ubicación solo se solicita al pulsar este botón.
+              </p>
+            )}
           </div>
-
-          <button
-            className="button button--secondary"
-            disabled={isBusy}
-            onClick={useCurrentLocation}
-            type="button"
-          >
-            <LocationIcon />
-            Usar mi ubicación
-          </button>
-          <p className="search-panel__privacy">
-            Solo solicitaremos acceso a tu ubicación al pulsar el botón.
-          </p>
         </section>
 
-        <StatusNotice error={error} hasData={Boolean(weather)} onRetry={retry} status={status} />
+        <StatusNotice error={error} hasData={hasWeather} onRetry={retry} status={status} />
 
-        {weather ? (
+        {hasWeather ? (
           <WeatherCard weather={weather} />
         ) : (
           status === 'idle' && (
             <section className="empty-state" aria-label="Información de la aplicación">
-              <div>
+              <div className="glass-panel">
                 <span aria-hidden="true">01</span>
                 <h2>Elige una ciudad</h2>
-                <p>Busca por nombre sin compartir tu ubicación.</p>
+                <p>Busca por nombre y consulta el clima sin compartir tu ubicación.</p>
               </div>
-              <div>
+              <div className="glass-panel">
                 <span aria-hidden="true">02</span>
                 <h2>Datos claros</h2>
-                <p>Temperatura, viento, humedad, presión y nubosidad.</p>
+                <p>Temperatura, viento, humedad y presión en una sola vista.</p>
               </div>
-              <div>
+              <div className="glass-panel">
                 <span aria-hidden="true">03</span>
                 <h2>Control de unidades</h2>
-                <p>Cambia entre el sistema métrico e imperial.</p>
+                <p>Cambia al instante entre el sistema métrico e imperial.</p>
               </div>
             </section>
           )
         )}
 
-        <footer className="app__footer">
-          Datos meteorológicos proporcionados por OpenWeather.
+        <footer className={`app__footer${hasWeather ? ' app__footer--weather glass-panel' : ''}`}>
+          <span aria-hidden="true" />
+          Datos meteorológicos proporcionados por OpenWeather
         </footer>
       </main>
     </div>
