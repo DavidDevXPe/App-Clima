@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { weatherFixture } from '../test/fixtures';
+import { formatConditionName } from '../utils/formatConditionName';
 import { formatCountryName } from '../utils/formatCountryName';
 import WeatherCard from './WeatherCard';
 
@@ -14,7 +15,8 @@ describe('WeatherCard', () => {
     expect(heroTemperature).toHaveTextContent(/^22.5°$/);
     expect(heroTemperature).not.toHaveTextContent(/[CF]/);
     expect(screen.getByText('Sensación térmica 23.1°C')).toBeInTheDocument();
-    expect(screen.getByText('cielo claro')).toBeInTheDocument();
+    expect(screen.getByText('Despejado')).toBeInTheDocument();
+    expect(screen.getByText('Sábado, 22 de agosto')).toBeInTheDocument();
     expect(container).not.toHaveTextContent('undefined');
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
@@ -58,5 +60,17 @@ describe('WeatherCard', () => {
 
   it('conserva el código original cuando Intl no puede resolverlo', () => {
     expect(formatCountryName('invalid')).toBe('invalid');
+  });
+
+  it.each([
+    ['nubes dispersas', '03d', 'Nublado'],
+    ['clear sky', '01d', 'Despejado'],
+    ['lluvia ligera', '10d', 'Lluvia'],
+    ['llovizna ligera', '09d', 'Llovizna'],
+    ['tormenta eléctrica', '11d', 'Tormenta'],
+    ['nieve', '13d', 'Nieve'],
+    ['niebla', '50d', 'Niebla'],
+  ])('presenta %s (%s) como %s', (description, icon, expectedName) => {
+    expect(formatConditionName(description, icon)).toBe(expectedName);
   });
 });

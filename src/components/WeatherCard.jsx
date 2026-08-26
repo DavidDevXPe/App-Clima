@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
 import PropTypes from 'prop-types';
+import { formatConditionName } from '../utils/formatConditionName';
 import { formatCountryName } from '../utils/formatCountryName';
 import WeatherIcon from './WeatherIcon';
 import WeatherMetric from './WeatherMetric';
@@ -28,11 +29,13 @@ function parseObservation(value) {
 }
 
 function formatObservationDate(date) {
-  return new Intl.DateTimeFormat('es-PE', {
+  const formattedDate = new Intl.DateTimeFormat('es-PE', {
     day: 'numeric',
     month: 'long',
     weekday: 'long',
   }).format(date);
+
+  return formattedDate.charAt(0).toLocaleUpperCase('es-PE') + formattedDate.slice(1);
 }
 
 function WeatherCard({ weather }) {
@@ -52,6 +55,7 @@ function WeatherCard({ weather }) {
   const temperatureUnit = isMetric ? '°C' : '°F';
   const windUnit = isMetric ? 'm/s' : 'mph';
   const countryName = formatCountryName(location.country);
+  const conditionName = formatConditionName(condition.description, condition.icon);
 
   return (
     <section className="weather-card glass-panel" aria-labelledby={titleId}>
@@ -96,7 +100,7 @@ function WeatherCard({ weather }) {
         </p>
         <WeatherIcon code={condition.icon} />
         <div className="weather-card__condition-group">
-          <p className="weather-card__condition">{condition.description}</p>
+          <p className="weather-card__condition">{conditionName}</p>
           <p className="weather-card__feels-like">
             Sensación térmica {formatNumber(feelsLike)}{temperatureUnit}
           </p>
