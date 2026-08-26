@@ -8,7 +8,7 @@ La clave de OpenWeather se utiliza únicamente en el servidor: nunca se incluye 
 
 ## Demo
 
-[https://weather-clima.vercel.app/](https://weather-clima.vercel.app/)
+[https://atmo-clima.netlify.app/](https://atmo-clima.netlify.app/)
 
 ## Funcionalidades
 
@@ -72,20 +72,24 @@ La geolocalización del navegador funciona en `localhost` y, al desplegar, requi
 | `npm run test:coverage` | Genera cobertura en `coverage`. |
 | `npm run check` | Ejecuta lint, pruebas y build en secuencia. |
 
-## Despliegue actual en Vercel
+## Despliegue actual en Netlify
 
-La versión pública está desplegada en [Vercel](https://weather-clima.vercel.app/). Vite genera el frontend estático y los entrypoints `api/weather.js` y `api/health.js` publican la API como Vercel Functions.
+La versión pública está desplegada en [Netlify](https://atmo-clima.netlify.app/). Vite genera el frontend estático (`dist`) y `netlify/functions/api.mjs` publica la API como Netlify Function, envolviendo la aplicación Express con `serverless-http`.
 
-Estas funciones son adaptadores delgados de la aplicación Express existente: validación, normalización, timeout, caché, rate limit y errores permanecen centralizados en `server/`.
+Esta función es un adaptador delgado de la aplicación Express existente: validación, normalización, timeout, caché, rate limit y errores permanecen centralizados en `server/`.
 
-En **Project Settings → Environment Variables**, configura `OPENWEATHER_API_KEY` para **Production** y **Preview**. No uses el prefijo `VITE_` y no copies la clave a ningún archivo versionado. Después de crear o actualizar la variable, genera un nuevo despliegue para que la función reciba el secreto.
+`netlify.toml` define el build (`npm run build` → `dist`), el directorio de funciones y los redirects: `/api/*` se reescribe hacia la función y `/*` cae en `index.html` para el enrutado del SPA.
 
-Vercel detecta automáticamente ambos archivos dentro de `api/`; este proyecto no necesita rewrites ni `vercel.json`. Tras desplegar, comprueba:
+En **Site configuration → Environment variables**, configura `OPENWEATHER_API_KEY`. No uses el prefijo `VITE_` y no copies la clave a ningún archivo versionado. Después de crear o actualizar la variable, dispara un nuevo despliegue para que la función reciba el secreto.
 
-- `https://weather-clima.vercel.app/api/health`
-- `https://weather-clima.vercel.app/api/weather?city=Paita`
+Tras desplegar, comprueba:
 
-`npm run preview` permite comprobar localmente el build de producción. `npm start` conserva la opción de servir `dist` y `/api` desde un proceso Node autogestionado, pero no forma parte del despliegue actual en Vercel.
+- `https://atmo-clima.netlify.app/api/health`
+- `https://atmo-clima.netlify.app/api/weather?city=Paita`
+
+`npm run preview` permite comprobar localmente el build de producción. `npm start` conserva la opción de servir `dist` y `/api` desde un proceso Node autogestionado, pero no forma parte del despliegue actual en Netlify.
+
+El proyecto también conserva `api/weather.js` y `api/health.js` (adaptadores para Vercel Functions) por si se despliega ahí en el futuro; no se usan en el despliegue de Netlify.
 
 Variables opcionales del servidor:
 
