@@ -1,14 +1,22 @@
-# Clima Ahora
+# ATMOS
 
-Aplicación meteorológica responsive y accesible construida con React. Permite buscar una ciudad o solicitar la ubicación del dispositivo de forma explícita, consultar las condiciones actuales y cambiar de manera coherente entre unidades métricas e imperiales.
+Aplicación meteorológica responsive y accesible construida con React. Su identidad visual adapta fondos, overlays y acentos al estado del clima, con una portada clara y una tarjeta de resultados compacta para consultar la información esencial sin distracciones.
+
+Permite buscar una ciudad o solicitar la ubicación del dispositivo de forma explícita, consultar las condiciones actuales y cambiar de manera coherente entre unidades métricas e imperiales.
 
 La clave de OpenWeather se utiliza únicamente en el servidor: nunca se incluye en el bundle del navegador.
+
+## Demo
+
+[https://weather-clima.vercel.app/](https://weather-clima.vercel.app/)
 
 ## Funcionalidades
 
 - Búsqueda por ciudad y consulta opcional por geolocalización.
 - Estados visibles de carga, error, reintento y éxito.
 - Temperatura y sensación térmica en °C/°F; viento en m/s o mph.
+- Temas atmosféricos para cielo despejado, noche, nubes, lluvia, tormenta, nieve y niebla.
+- Interfaz glass, responsive y optimizada para móvil, tablet y escritorio.
 - Respuesta de OpenWeather validada y convertida a un modelo estable.
 - Proxy Express con timeout, caché, deduplicación y límite de solicitudes.
 - Cabeceras de seguridad y Content Security Policy mediante Helmet.
@@ -20,8 +28,6 @@ La clave de OpenWeather se utiliza únicamente en el servidor: nunca se incluye 
 
 - Node.js 24.15 o superior.
 - Una clave activa de [OpenWeather](https://openweathermap.org/api).
-
-> La clave que anteriormente estaba incluida en el código fuente debe revocarse y reemplazarse, ya que permanece en el historial de Git.
 
 ## Configuración local
 
@@ -66,18 +72,11 @@ La geolocalización del navegador funciona en `localhost` y, al desplegar, requi
 | `npm run test:coverage` | Genera cobertura en `coverage`. |
 | `npm run check` | Ejecuta lint, pruebas y build en secuencia. |
 
-## Producción
+## Despliegue actual en Vercel
 
-```bash
-npm run build
-npm start
-```
+La versión pública está desplegada en [Vercel](https://weather-clima.vercel.app/). Vite genera el frontend estático y los entrypoints `api/weather.js` y `api/health.js` publican la API como Vercel Functions.
 
-El despliegue debe ejecutar el servidor Node, no alojar únicamente los archivos estáticos, porque `/api/weather` protege la clave. Configura `OPENWEATHER_API_KEY` como secreto del entorno de despliegue, establece `HOST=0.0.0.0` cuando la plataforma lo requiera y termina HTTPS delante del servidor.
-
-### Vercel
-
-Los entrypoints `api/weather.js` y `api/health.js` publican la aplicación Express existente como Vercel Functions. Son adaptadores delgados: validación, normalización, timeout, caché, rate limit y errores permanecen centralizados en `server/`.
+Estas funciones son adaptadores delgados de la aplicación Express existente: validación, normalización, timeout, caché, rate limit y errores permanecen centralizados en `server/`.
 
 En **Project Settings → Environment Variables**, configura `OPENWEATHER_API_KEY` para **Production** y **Preview**. No uses el prefijo `VITE_` y no copies la clave a ningún archivo versionado. Después de crear o actualizar la variable, genera un nuevo despliegue para que la función reciba el secreto.
 
@@ -85,6 +84,8 @@ Vercel detecta automáticamente ambos archivos dentro de `api/`; este proyecto n
 
 - `https://weather-clima.vercel.app/api/health`
 - `https://weather-clima.vercel.app/api/weather?city=Paita`
+
+`npm run preview` permite comprobar localmente el build de producción. `npm start` conserva la opción de servir `dist` y `/api` desde un proceso Node autogestionado, pero no forma parte del despliegue actual en Vercel.
 
 Variables opcionales del servidor:
 
@@ -126,7 +127,7 @@ server/
 
 ## Seguridad
 
-- Nunca confirmes `.env` ni vuelvas a incluir claves en `src`.
-- Rota cualquier clave que haya aparecido previamente en Git.
+- Nunca versiones `.env` ni incluyas claves en `src`.
+- Revoca y reemplaza de inmediato cualquier clave que llegue a exponerse.
 - Mantén las dependencias actualizadas y ejecuta periódicamente `npm audit`.
 - El limitador y la caché actuales viven en memoria. Para múltiples instancias, utiliza un almacén compartido como Redis y aplica límites también en el proxy o plataforma de despliegue.
