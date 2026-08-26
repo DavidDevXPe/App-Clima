@@ -673,6 +673,14 @@ svg {
     padding: 0.9rem;
   }
 
+  .app--welcome .app-header {
+    min-height: 0;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0.35rem;
+  }
+
   .app-header__logo {
     width: auto;
     height: 3.25rem;
@@ -687,12 +695,30 @@ svg {
     text-align: right;
   }
 
+  .app--welcome .app-header__descriptor {
+    display: inline-flex;
+    max-width: none;
+    justify-content: flex-start;
+    color: var(--text-secondary);
+    font-size: 0.65rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0.18em;
+    opacity: 0.85;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .app--welcome .app-header__descriptor span {
+    display: none;
+  }
+
   .app-header__update {
     white-space: normal;
   }
 
-  .hero {
-    margin-top: clamp(2.5rem, 7vh, 4rem);
+  .app--welcome .hero {
+    margin-top: clamp(1.5rem, 3.5vh, 2rem);
   }
 
   .hero h1 {
