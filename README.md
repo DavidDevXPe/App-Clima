@@ -75,6 +75,17 @@ npm start
 
 El despliegue debe ejecutar el servidor Node, no alojar únicamente los archivos estáticos, porque `/api/weather` protege la clave. Configura `OPENWEATHER_API_KEY` como secreto del entorno de despliegue, establece `HOST=0.0.0.0` cuando la plataforma lo requiera y termina HTTPS delante del servidor.
 
+### Vercel
+
+Los entrypoints `api/weather.js` y `api/health.js` publican la aplicación Express existente como Vercel Functions. Son adaptadores delgados: validación, normalización, timeout, caché, rate limit y errores permanecen centralizados en `server/`.
+
+En **Project Settings → Environment Variables**, configura `OPENWEATHER_API_KEY` para **Production** y **Preview**. No uses el prefijo `VITE_` y no copies la clave a ningún archivo versionado. Después de crear o actualizar la variable, genera un nuevo despliegue para que la función reciba el secreto.
+
+Vercel detecta automáticamente ambos archivos dentro de `api/`; este proyecto no necesita rewrites ni `vercel.json`. Tras desplegar, comprueba:
+
+- `https://weather-clima.vercel.app/api/health`
+- `https://weather-clima.vercel.app/api/weather?city=Paita`
+
 Variables opcionales del servidor:
 
 | Variable | Valor predeterminado | Uso |
@@ -98,6 +109,9 @@ La API acepta una ciudad o el par completo de coordenadas, pero nunca ambos. Los
 ## Estructura
 
 ```text
+api/
+  health.js          Adaptador Vercel para el health check
+  weather.js         Adaptador Vercel para la API meteorológica
 src/
   components/       Interfaz, búsqueda, estados e iconos
   hooks/            Flujo asíncrono, geolocalización y cancelación
