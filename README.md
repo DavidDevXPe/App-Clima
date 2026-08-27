@@ -8,7 +8,7 @@ La clave de OpenWeather se utiliza únicamente en el servidor: nunca se incluye 
 
 ## Demo
 
-[https://atmo-clima.netlify.app/](https://atmo-clima.netlify.app/)
+[https://atmos-clima.netlify.app/](https://atmos-clima.netlify.app/)
 
 ## Funcionalidades
 
@@ -74,7 +74,7 @@ La geolocalización del navegador funciona en `localhost` y, al desplegar, requi
 
 ## Despliegue actual en Netlify
 
-La versión pública está desplegada en [Netlify](https://atmo-clima.netlify.app/). Vite genera el frontend estático (`dist`) y `netlify/functions/api.mjs` publica la API como Netlify Function, envolviendo la aplicación Express con `serverless-http`.
+La versión pública está desplegada en [Netlify](https://atmos-clima.netlify.app/). Vite genera el frontend estático (`dist`) y `netlify/functions/api.mjs` publica la API como Netlify Function, envolviendo la aplicación Express con `serverless-http`.
 
 Esta función es un adaptador delgado de la aplicación Express existente: validación, normalización, timeout, caché, rate limit y errores permanecen centralizados en `server/`.
 
@@ -84,8 +84,8 @@ En **Site configuration → Environment variables**, configura `OPENWEATHER_API_
 
 Tras desplegar, comprueba:
 
-- `https://atmo-clima.netlify.app/api/health`
-- `https://atmo-clima.netlify.app/api/weather?city=Paita`
+- `https://atmos-clima.netlify.app/api/health`
+- `https://atmos-clima.netlify.app/api/weather?city=Paita`
 
 `npm run preview` permite comprobar localmente el build de producción. `npm start` conserva la opción de servir `dist` y `/api` desde un proceso Node autogestionado, pero no forma parte del despliegue actual en Netlify.
 
