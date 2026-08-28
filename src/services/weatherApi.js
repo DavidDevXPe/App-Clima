@@ -1,3 +1,5 @@
+import { isTimezoneOffsetSeconds } from '../utils/formatWeatherDateTime';
+
 const WEATHER_ENDPOINT = '/api/weather';
 const COORDINATE_DECIMALS = 8;
 
@@ -12,6 +14,8 @@ export class WeatherApiError extends Error {
 const isFiniteNumber = (value) => Number.isFinite(value);
 const isNonEmptyString = (value) => typeof value === 'string' && value.trim().length > 0;
 const isString = (value) => typeof value === 'string';
+const isValidDateTime = (value) =>
+  isNonEmptyString(value) && !Number.isNaN(new Date(value).getTime());
 
 function serializeCoordinate(value, minimum, maximum) {
   if (!Number.isFinite(value) || value < minimum || value > maximum) {
@@ -37,7 +41,8 @@ export function isWeatherData(value) {
       isFiniteNumber(value.metrics?.pressureHpa) &&
       isFiniteNumber(value.metrics?.windSpeedMs) &&
       isFiniteNumber(value.metrics?.cloudiness) &&
-      isNonEmptyString(value.observedAt),
+      isValidDateTime(value.observedAt) &&
+      isTimezoneOffsetSeconds(value.timezoneOffsetSeconds),
   );
 }
 

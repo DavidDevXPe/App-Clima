@@ -16,6 +16,7 @@ export const weatherFixture = {
     cloudiness: 8,
   },
   observedAt: '2026-08-22T15:30:00.000Z',
+  timezoneOffsetSeconds: -18_000,
 };
 
 export const openWeatherFixture = {
@@ -31,4 +32,5 @@ export const openWeatherFixture = {
   wind: { speed: 3.2 },
   clouds: { all: 8 },
   dt: 1_777_047_000,
+  timezone: -18_000,
 };

@@ -88,7 +88,7 @@ export function createApp(options = {}) {
           imgSrc: ["'self'", "data:"],
           objectSrc: ["'none'"],
           scriptSrc: ["'self'"],
-          styleSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
         },
       },
       referrerPolicy: { policy: "no-referrer" },
@@ -103,7 +103,6 @@ export function createApp(options = {}) {
     });
   };
 
-  app.get("/health", healthHandler);
   app.get("/api/health", healthHandler);
 
   app.get(
@@ -190,7 +189,3 @@ export function createApp(options = {}) {
 
   return app;
 }
-
-const app = createApp();
-
-export default app;

@@ -6,7 +6,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import { reactRefresh } from 'eslint-plugin-react-refresh';
 
 export default defineConfig([
-  globalIgnores(['coverage/', 'dist/']),
+  globalIgnores(['.netlify/', 'coverage/', 'dist/']),
   {
     files: ['src/**/*.{js,jsx}'],
     extends: [
@@ -24,7 +24,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['*.config.js', 'server/**/*.js'],
+    files: ['*.config.js', 'netlify/functions/**/*.{js,mjs}', 'server/**/*.js'],
     extends: [js.configs.recommended],
     languageOptions: {
       globals: globals.node,

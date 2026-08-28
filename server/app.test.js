@@ -28,6 +28,9 @@ describe('API meteorológica', () => {
     expect(response.body.status).toBe('ok');
     expect(response.headers['cache-control']).toBe('no-store');
     expect(response.headers['x-content-type-options']).toBe('nosniff');
+    expect(response.headers['content-security-policy']).toContain(
+      "style-src 'self' 'unsafe-inline'",
+    );
   });
 
   it('valida, consulta y normaliza una búsqueda por ciudad', async () => {
@@ -38,6 +41,7 @@ describe('API meteorológica', () => {
     expect(response.body.data).toMatchObject({
       location: { city: 'Lima', country: 'PE' },
       metrics: { temperatureC: 22.5, windSpeedMs: 3.2 },
+      timezoneOffsetSeconds: -18_000,
     });
 
     const upstreamUrl = new URL(fetchImpl.mock.calls[0][0]);
@@ -47,6 +51,38 @@ describe('API meteorológica', () => {
     expect(upstreamUrl.searchParams.get('appid')).toBe('test-server-key');
     expect(JSON.stringify(response.body)).not.toContain('test-server-key');
   });
+
+  it.each([
+    ['ausente', undefined],
+    ['fraccionaria', -18_000.5],
+    ['menor que UTC-12', -43_201],
+    ['mayor que UTC+14', 50_401],
+  ])('rechaza una zona horaria del proveedor %s', async (_description, timezone) => {
+    const fetchImpl = vi.fn().mockResolvedValue(
+      upstreamResponse({ ...openWeatherFixture, timezone }),
+    );
+    const response = await request(createTestApp({ fetchImpl }))
+      .get('/api/weather')
+      .query({ city: 'Lima' });
+
+    expect(response.status).toBe(502);
+    expect(response.body.error.code).toBe('INVALID_WEATHER_RESPONSE');
+  });
+
+  it.each([-43_200, 50_400])(
+    'acepta el límite de zona horaria %i del proveedor',
+    async (timezone) => {
+      const fetchImpl = vi.fn().mockResolvedValue(
+        upstreamResponse({ ...openWeatherFixture, timezone }),
+      );
+      const response = await request(createTestApp({ fetchImpl }))
+        .get('/api/weather')
+        .query({ city: 'Lima' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.timezoneOffsetSeconds).toBe(timezone);
+    },
+  );
 
   it('rechaza parámetros ambiguos antes de consumir la API externa', async () => {
     const fetchImpl = vi.fn();

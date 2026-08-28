@@ -19,7 +19,7 @@ La clave de OpenWeather se utiliza únicamente en el servidor: nunca se incluye 
 - Interfaz glass, responsive y optimizada para móvil, tablet y escritorio.
 - Respuesta de OpenWeather validada y convertida a un modelo estable.
 - Proxy Express con timeout, caché, deduplicación y límite de solicitudes.
-- Cabeceras de seguridad y Content Security Policy mediante Helmet.
+- Cabeceras de seguridad y Content Security Policy mediante Helmet y Netlify.
 - Navegación por teclado, foco visible, anuncios accesibles y movimiento reducido.
 - Pruebas de componentes, flujo de usuario y API.
 - CI y actualizaciones automáticas de dependencias con GitHub Actions y Dependabot.
@@ -78,7 +78,7 @@ La versión pública está desplegada en [Netlify](https://atmos-clima.netlify.a
 
 Esta función es un adaptador delgado de la aplicación Express existente: validación, normalización, timeout, caché, rate limit y errores permanecen centralizados en `server/`.
 
-`netlify.toml` define el build (`npm run build` → `dist`), el directorio de funciones y los redirects: `/api/*` se reescribe hacia la función y `/*` cae en `index.html` para el enrutado del SPA.
+`netlify.toml` define el build (`npm run build` → `dist`), el directorio de funciones, el rewrite de `/api/*`, las cabeceras de seguridad del contenido estático y la caché inmutable de los assets versionados por Vite. Como la aplicación no utiliza rutas del lado del cliente, las URLs inexistentes conservan un `404` real en lugar de devolver un falso `200` con `index.html`.
 
 En **Site configuration → Environment variables**, configura `OPENWEATHER_API_KEY`. No uses el prefijo `VITE_` y no copies la clave a ningún archivo versionado. Después de crear o actualizar la variable, dispara un nuevo despliegue para que la función reciba el secreto.
 
@@ -86,10 +86,9 @@ Tras desplegar, comprueba:
 
 - `https://atmos-clima.netlify.app/api/health`
 - `https://atmos-clima.netlify.app/api/weather?city=Paita`
+- Una ruta inexistente debe responder `404`, no HTML con estado `200`.
 
 `npm run preview` permite comprobar localmente el build de producción. `npm start` conserva la opción de servir `dist` y `/api` desde un proceso Node autogestionado, pero no forma parte del despliegue actual en Netlify.
-
-El proyecto también conserva `api/weather.js` y `api/health.js` (adaptadores para Vercel Functions) por si se despliega ahí en el futuro; no se usan en el despliegue de Netlify.
 
 Variables opcionales del servidor:
 
@@ -114,9 +113,9 @@ La API acepta una ciudad o el par completo de coordenadas, pero nunca ambos. Los
 ## Estructura
 
 ```text
-api/
-  health.js          Adaptador Vercel para el health check
-  weather.js         Adaptador Vercel para la API meteorológica
+netlify/
+  functions/
+    api.mjs          Adaptador de Express para Netlify Functions
 src/
   components/       Interfaz, búsqueda, estados e iconos
   hooks/            Flujo asíncrono, geolocalización y cancelación
@@ -127,6 +126,7 @@ server/
   weather-service.js OpenWeather, normalización, caché y timeout
   validation.js      Validación de consultas
   rate-limit.js      Protección básica de cuota
+netlify.toml          Build, Functions, redirects, cabeceras y caché
 ```
 
 ## Seguridad

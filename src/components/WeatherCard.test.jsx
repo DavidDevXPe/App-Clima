@@ -21,6 +21,21 @@ describe('WeatherCard', () => {
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
 
+  it('muestra la fecha de la ubicación cuando su zona horaria cruza al día siguiente', () => {
+    render(
+      <WeatherCard
+        weather={{
+          ...weatherFixture,
+          observedAt: '2026-08-22T23:30:00.000Z',
+          timezoneOffsetSeconds: 7_200,
+        }}
+      />,
+    );
+
+    expect(screen.getByText('Domingo, 23 de agosto')).toBeInTheDocument();
+    expect(screen.queryByText('Sábado, 22 de agosto')).not.toBeInTheDocument();
+  });
+
   it('cambia de forma coherente la temperatura y el viento al sistema imperial', async () => {
     const user = userEvent.setup();
     const { container } = render(<WeatherCard weather={weatherFixture} />);

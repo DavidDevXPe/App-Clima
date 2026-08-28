@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
-import app from "./app.js";
+import { createApp } from "./app.js";
 
 export const DEFAULT_PORT = 8787;
 
@@ -16,7 +16,7 @@ function readPort(value) {
 }
 
 export function startServer({
-  application = app,
+  application = createApp(),
   port = readPort(process.env.PORT),
   host = process.env.HOST || "127.0.0.1",
 } = {}) {

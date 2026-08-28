@@ -46,7 +46,10 @@ function App() {
       <WeatherBackground theme={weatherTheme} />
 
       <main className="app__shell" aria-busy={isBusy}>
-        <AppHeader observedAt={weather?.observedAt} />
+        <AppHeader
+          observedAt={weather?.observedAt}
+          timezoneOffsetSeconds={weather?.timezoneOffsetSeconds}
+        />
 
         {!hasWeather && (
           <section className="hero" aria-labelledby="welcome-title">

@@ -2,6 +2,10 @@ import { useId, useState } from 'react';
 import PropTypes from 'prop-types';
 import { formatConditionName } from '../utils/formatConditionName';
 import { formatCountryName } from '../utils/formatCountryName';
+import {
+  formatWeatherDate,
+  isTimezoneOffsetSeconds,
+} from '../utils/formatWeatherDateTime';
 import WeatherIcon from './WeatherIcon';
 import WeatherMetric from './WeatherMetric';
 import './styles/weatherCard.css';
@@ -23,26 +27,11 @@ function metersPerSecondToMilesPerHour(value) {
   return value * 2.23694;
 }
 
-function parseObservation(value) {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date;
-}
-
-function formatObservationDate(date) {
-  const formattedDate = new Intl.DateTimeFormat('es-PE', {
-    day: 'numeric',
-    month: 'long',
-    weekday: 'long',
-  }).format(date);
-
-  return formattedDate.charAt(0).toLocaleUpperCase('es-PE') + formattedDate.slice(1);
-}
-
 function WeatherCard({ weather }) {
   const [isMetric, setIsMetric] = useState(true);
   const titleId = useId();
-  const { condition, location, metrics, observedAt } = weather;
-  const observation = parseObservation(observedAt);
+  const { condition, location, metrics, observedAt, timezoneOffsetSeconds } = weather;
+  const observationDate = formatWeatherDate(observedAt, timezoneOffsetSeconds);
   const temperature = isMetric
     ? metrics.temperatureC
     : celsiusToFahrenheit(metrics.temperatureC);
@@ -70,9 +59,9 @@ function WeatherCard({ weather }) {
               </>
             )}
           </h2>
-          {observation && (
+          {observationDate && (
             <p className="weather-card__date">
-              <time dateTime={observedAt}>{formatObservationDate(observation)}</time>
+              <time dateTime={observedAt}>{observationDate}</time>
             </p>
           )}
         </div>
@@ -146,6 +135,14 @@ const finiteNumber = (props, propName, componentName) => {
   return null;
 };
 
+const timezoneOffset = (props, propName, componentName) => {
+  if (!isTimezoneOffsetSeconds(props[propName])) {
+    return new Error(`${propName} debe ser un desplazamiento UTC válido en ${componentName}.`);
+  }
+
+  return null;
+};
+
 WeatherCard.propTypes = {
   weather: PropTypes.shape({
     condition: PropTypes.shape({
@@ -165,6 +162,7 @@ WeatherCard.propTypes = {
       windSpeedMs: finiteNumber,
     }).isRequired,
     observedAt: PropTypes.string.isRequired,
+    timezoneOffsetSeconds: timezoneOffset,
   }).isRequired,
 };
 

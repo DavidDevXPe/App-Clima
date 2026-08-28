@@ -7,6 +7,8 @@ export const DEFAULT_CACHE_TTL_MS = 5 * 60_000;
 export const DEFAULT_CACHE_MAX_ENTRIES = 250;
 
 const ICON_PATTERN = /^\d{2}[dn]$/;
+const MIN_TIMEZONE_OFFSET_SECONDS = -12 * 60 * 60;
+const MAX_TIMEZONE_OFFSET_SECONDS = 14 * 60 * 60;
 
 function invalidUpstreamResponse() {
   throw new AppError(
@@ -28,10 +30,14 @@ function requireString(value, { allowEmpty = false, pattern } = {}) {
   return value.trim();
 }
 
-function requireNumber(value, { minimum = -Infinity, maximum = Infinity } = {}) {
+function requireNumber(
+  value,
+  { integer = false, minimum = -Infinity, maximum = Infinity } = {},
+) {
   if (
     typeof value !== "number" ||
     !Number.isFinite(value) ||
+    (integer && !Number.isInteger(value)) ||
     value < minimum ||
     value > maximum
   ) {
@@ -81,6 +87,11 @@ export function mapOpenWeatherResponse(payload) {
       }),
     },
     observedAt: observedDate.toISOString(),
+    timezoneOffsetSeconds: requireNumber(payload.timezone, {
+      integer: true,
+      minimum: MIN_TIMEZONE_OFFSET_SECONDS,
+      maximum: MAX_TIMEZONE_OFFSET_SECONDS,
+    }),
   };
 }
 

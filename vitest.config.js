@@ -18,7 +18,7 @@ export default defineConfig({
     environment: 'jsdom',
     fileParallelism: false,
     maxWorkers: 1,
-    pool: 'threads',
+    pool: 'forks',
     restoreMocks: true,
     setupFiles: './src/test/setup.js',
   },

@@ -1,6 +1,7 @@
 import atmosLogo from '../assets/branding/atmos-logo.png';
 import atmosSymbol from '../assets/branding/atmos-symbol.png';
 import PropTypes from 'prop-types';
+import { formatWeatherTime } from '../utils/formatWeatherDateTime';
 
 function RefreshIcon() {
   return (
@@ -11,19 +12,10 @@ function RefreshIcon() {
   );
 }
 
-function formatUpdateTime(value) {
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) return null;
-
-  return new Intl.DateTimeFormat('es-PE', {
-    hour: 'numeric',
-    minute: '2-digit',
-  }).format(date);
-}
-
-function AppHeader({ observedAt }) {
-  const updateTime = observedAt ? formatUpdateTime(observedAt) : null;
+function AppHeader({ observedAt, timezoneOffsetSeconds }) {
+  const updateTime = observedAt
+    ? formatWeatherTime(observedAt, timezoneOffsetSeconds)
+    : null;
 
   return (
     <header className="app-header">
@@ -50,6 +42,7 @@ function AppHeader({ observedAt }) {
 
 AppHeader.propTypes = {
   observedAt: PropTypes.string,
+  timezoneOffsetSeconds: PropTypes.number,
 };
 
 export default AppHeader;
